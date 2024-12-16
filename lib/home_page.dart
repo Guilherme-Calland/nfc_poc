@@ -21,38 +21,40 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        spacing: 32,
-        children: [
-          Center(
-            child: Text(
-              _nfcTag,
-              style: TextStyle(
-                color: appTheme,
-                fontSize: 22
-              ),
-            ),
-          ),
-          if(!_readingTag)
-          GestureDetector(
-            onTap: _scanNFC,
-            child: Container(
-              margin: EdgeInsets.symmetric(horizontal: 32.0),
-              padding: EdgeInsets.symmetric(horizontal: 32.0),
-              decoration: BoxDecoration(
-                border: Border.all(color: appTheme),
-              ),
-              height: 58,
-              child: Center(
-                child: Text(
-                  "Ler NFC",
-                  style: TextStyle(color: appTheme),
+      body: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          spacing: 32,
+          children: [
+            Center(
+              child: Text(
+                _nfcTag,
+                style: TextStyle(
+                  color: appTheme,
+                  fontSize: 22
                 ),
               ),
             ),
-          ),
-        ],
+            if(!_readingTag)
+            GestureDetector(
+              onTap: _scanNFC,
+              child: Container(
+                margin: EdgeInsets.symmetric(horizontal: 32.0),
+                padding: EdgeInsets.symmetric(horizontal: 32.0),
+                decoration: BoxDecoration(
+                  border: Border.all(color: appTheme),
+                ),
+                height: 58,
+                child: Center(
+                  child: Text(
+                    "Ler NFC",
+                    style: TextStyle(color: appTheme),
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -71,9 +73,10 @@ class _HomePageState extends State<HomePage> {
       try{
         final ndef = Ndef.from(tag);
         bool tagNotFormatted = (ndef == null) || (ndef.cachedMessage == null);
+        final data = tag.data;
         if(tagNotFormatted){
           setState(() {
-            _nfcTag = 'nfc não está formatado\n$tag';
+            _nfcTag = 'nfc não está formatado\ndata:$data\nentries:${data.entries}\nvalues:${data.values}';
           });
         } else {
           final payload = ndef.cachedMessage!.records.first.payload;
