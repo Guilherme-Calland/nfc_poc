@@ -21,52 +21,69 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          spacing: 32,
-          children: [
-            Center(
-              child: Text(
-                _nfcTag,
-                style: TextStyle(
-                  color: appTheme,
-                  fontSize: 22
+      body: _readingTag ? 
+      Center(
+        child: Text('Pronto pra ler...', style: TextStyle(color: appTheme, fontSize: 32),),
+      ) :
+      
+      SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+                  vertical: 32.0,
+                  horizontal: 16.0,
                 ),
-              ),
-            ),
-            if(!_readingTag)
-            GestureDetector(
-              onTap: _scanNFC,
-              child: Container(
-                margin: EdgeInsets.symmetric(horizontal: 32.0),
-                padding: EdgeInsets.symmetric(horizontal: 32.0),
-                decoration: BoxDecoration(
-                  border: Border.all(color: appTheme),
-                ),
-                height: 58,
-                child: Center(
+          child: Column(
+            spacing: 16.0,
+            children: [
+              Expanded(
+                child: SingleChildScrollView(
                   child: Text(
-                    "Ler NFC",
-                    style: TextStyle(color: appTheme),
+                    _nfcTag,
+                    style: TextStyle(
+                      color: appTheme,
+                      fontSize: 22
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+              if(!_readingTag)
+              GestureDetector(
+                onTap: _scanNFC,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 32.0),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: appTheme),
+                  ),
+                  height: 58,
+                  child: Center(
+                    child: Text(
+                      "Ler NFC",
+                      style: TextStyle(color: appTheme),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  void _scanNFC() {
+  void _scanNFC() async{
+    final nfcManager = NfcManager.instance;
+    bool deviceHasNFCScan = await nfcManager.isAvailable();
+
+    if(!deviceHasNFCScan){
+      setState(() {
+        _nfcTag = 'Leitura de NFC não está disponível nesse dispositivo';
+      });
+      return;
+    }
 
     setState(() {
-      _nfcTag = 'pronto pra ler...';
       _readingTag = true;
     });
-
-    final nfcManager = NfcManager.instance;
 
     // initialize scan listener
     nfcManager.startSession(onDiscovered: (tag) async {
