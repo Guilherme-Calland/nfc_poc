@@ -15,6 +15,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
 
   String _nfcTag = '';
+  bool _readingTag = false;
 
   @override
   Widget build(BuildContext context) {
@@ -24,8 +25,16 @@ class _HomePageState extends State<HomePage> {
         mainAxisAlignment: MainAxisAlignment.center,
         spacing: 32,
         children: [
-          if(_nfcTag != '')
-          Text(_nfcTag),
+          Center(
+            child: Text(
+              _nfcTag,
+              style: TextStyle(
+                color: appTheme,
+                fontSize: 22
+              ),
+            ),
+          ),
+          if(!_readingTag)
           GestureDetector(
             onTap: _scanNFC,
             child: Container(
@@ -49,6 +58,12 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _scanNFC() {
+
+    setState(() {
+      _nfcTag = 'pronto pra ler...';
+      _readingTag = true;
+    });
+
     final nfcManager = NfcManager.instance;
 
     // initialize scan listener
@@ -58,7 +73,7 @@ class _HomePageState extends State<HomePage> {
         bool tagNotFormatted = (ndef == null) || (ndef.cachedMessage == null);
         if(tagNotFormatted){
           setState(() {
-            _nfcTag = 'nfc não está formatado';
+            _nfcTag = 'nfc não está formatado\n$tag';
           });
         } else {
           final payload = ndef.cachedMessage!.records.first.payload;
@@ -72,6 +87,10 @@ class _HomePageState extends State<HomePage> {
         });
       } finally {
         nfcManager.stopSession();
+
+        setState(() {
+          _readingTag = false;
+        });
       }
     });
 
