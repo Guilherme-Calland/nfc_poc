@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nfc_poc/home_page.dart';
+import 'package:nfc_poc/ui/home_page.dart';
 
 main(){
   runApp(NfcPoc());
