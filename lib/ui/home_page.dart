@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:nfc_manager/nfc_manager.dart';
+import 'package:nfc_poc/core/colors.dart';
 import 'package:nfc_poc/repositories/repository.dart';
 import 'package:nfc_poc/services/nfc_service.dart';
 import 'package:nfc_poc/ui/app_button.dart';
@@ -69,9 +69,9 @@ class _HomePageState extends State<HomePage> {
                 color: Colors.blueAccent,
               ),
               AppButton(
-                onTap: _writeNFC,
+                onTap: _writeToNFC,
                 label: "Escrever na tag NFC",
-                color: const Color.fromARGB(255, 71, 68, 255),
+                color: AppColors.writeColor,
               ),
             ],
           ),
@@ -96,7 +96,47 @@ class _HomePageState extends State<HomePage> {
     setState(() {});
   }
 
-  _writeNFC() {
+  void _writeToNFC() {
+    // setState(() {
+    //   _statusMessage = "Waiting for an NFC tag...";
+    // });
+
+    // NfcManager.instance.startSession(onDiscovered: (NfcTag tag) async {
+    //   try {
+    //     final ndef = Ndef.from(tag);
+    //     if (ndef == null) {
+    //       setState(() {
+    //         _statusMessage = "Tag is not NDEF compliant.";
+    //       });
+    //       return;
+    //     }
+
+    //     if (!ndef.isWritable) {
+    //       setState(() {
+    //         _statusMessage = "Tag is not writable.";
+    //       });
+    //       return;
+    //     }
+
+    //     // Create an NDEF message
+    //     final message = NdefMessage([
+    //       NdefRecord.createText(data),
+    //     ]);
+
+    //     // Write the NDEF message to the tag
+    //     await ndef.write(message);
+
+    //     setState(() {
+    //       _statusMessage = "Write successful! Data: $data";
+    //     });
+    //   } catch (e) {
+    //     setState(() {
+    //       _statusMessage = "Write failed: $e";
+    //     });
+    //   } finally {
+    //     NfcManager.instance.stopSession();
+    //   }
+    // });
   }
 }
 

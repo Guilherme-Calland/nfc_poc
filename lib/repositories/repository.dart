@@ -8,6 +8,8 @@ class Repository{
     _service.readNFC(onResult);
   }
 
+  
+
   Future<bool> deviceCanReadWrite()async{
     return await _service.deviceHasNFC();
   }
