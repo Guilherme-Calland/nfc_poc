@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:nfc_poc/core/colors.dart';
 import 'package:nfc_poc/repositories/repository.dart';
 import 'package:nfc_poc/services/nfc_service.dart';
 import 'package:nfc_poc/ui/app_button.dart';
-
-const appTheme = Colors.green;
+import 'package:nfc_poc/ui/write_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({
@@ -19,6 +17,7 @@ class _HomePageState extends State<HomePage> {
 
   String _message = '';
   bool _readingTag = false;
+  bool _writingTag = false;
 
   late final Repository repository;
 
@@ -37,11 +36,16 @@ class _HomePageState extends State<HomePage> {
       Center(
           child: Text(
             'Pronto pra ler...',
-            style: TextStyle(color: appTheme, fontSize: 32),
+            style: TextStyle(fontSize: 32),
           ),
         )
-      :
-      
+      : _writingTag ?
+      Center(
+          child: Text(
+            'Pronto pra escrever...',
+            style: TextStyle(fontSize: 32),
+          ),
+        ) :
       SafeArea(
         child: Padding(
           padding: const EdgeInsets.symmetric(
@@ -62,16 +66,17 @@ class _HomePageState extends State<HomePage> {
                   ),
                 ),
               ),
-              if(!_readingTag)
+              if(!_readingTag && !_writingTag)
               AppButton(
                 onTap: _readNFC,
                 label: "Ler tag NFC",
                 color: Colors.blueAccent,
               ),
+              if(!_readingTag && !_writingTag)
               AppButton(
                 onTap: _writeToNFC,
                 label: "Escrever na tag NFC",
-                color: AppColors.writeColor,
+                color: Colors.blueAccent,
               ),
             ],
           ),
@@ -81,62 +86,52 @@ class _HomePageState extends State<HomePage> {
   }
 
   _readNFC() async{
+    setState(() {
+      _message = "";
+      _readingTag = true;
+    });
+
     bool deviceHasNFC = await repository.deviceCanReadWrite();
     if(deviceHasNFC){
       repository.readData((result){
-        setState(() {
-          _readingTag = true;
-        });
         _message = result;
-        _readingTag = false;
+        setState(() {
+          _readingTag = false;
+        });
       });
     }else{
-      _message = 'Esse dispositivo não está habilitado para o uso de nfc';
+      setState(() {
+        _readingTag = false;
+        _message = "Esse dispositivo não está habilitado para leitura de tag nfc";
+      });
     }
-    setState(() {});
   }
 
-  void _writeToNFC() {
-    // setState(() {
-    //   _statusMessage = "Waiting for an NFC tag...";
-    // });
+  void _writeToNFC() async{
+    setState(() {
+      _writingTag = true;
+      _message = "";
+    });
+    final bool deviceCanReadWrite = await repository.deviceCanReadWrite();
+    if(deviceCanReadWrite){
+      String code = await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => WritePage()),
+      );
 
-    // NfcManager.instance.startSession(onDiscovered: (NfcTag tag) async {
-    //   try {
-    //     final ndef = Ndef.from(tag);
-    //     if (ndef == null) {
-    //       setState(() {
-    //         _statusMessage = "Tag is not NDEF compliant.";
-    //       });
-    //       return;
-    //     }
+      debugPrint("written code: $code");
 
-    //     if (!ndef.isWritable) {
-    //       setState(() {
-    //         _statusMessage = "Tag is not writable.";
-    //       });
-    //       return;
-    //     }
-
-    //     // Create an NDEF message
-    //     final message = NdefMessage([
-    //       NdefRecord.createText(data),
-    //     ]);
-
-    //     // Write the NDEF message to the tag
-    //     await ndef.write(message);
-
-    //     setState(() {
-    //       _statusMessage = "Write successful! Data: $data";
-    //     });
-    //   } catch (e) {
-    //     setState(() {
-    //       _statusMessage = "Write failed: $e";
-    //     });
-    //   } finally {
-    //     NfcManager.instance.stopSession();
-    //   }
-    // });
+      repository.writeData(code, (){
+        setState(() {
+          _writingTag = false;
+        });
+      });
+    }else{
+      setState(() {
+        _writingTag = false;
+        _message = "Esse dispositivo não está habilitado para escrita de tag nfc";
+      });
+    }
   }
 }
 

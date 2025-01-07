@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:nfc_poc/core/colors.dart';
 import 'package:nfc_poc/ui/app_button.dart';
 
 class WritePage extends StatelessWidget {
@@ -12,7 +11,7 @@ class WritePage extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: Column(
           spacing: 16.0,
-          mainAxisSize: MainAxisSize.min,
+          mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TextField(
@@ -20,7 +19,7 @@ class WritePage extends StatelessWidget {
                 text = val;
               }
             ),
-            AppButton(onTap: () => _onTextConfirm(context, text), color: AppColors.writeColor, label: 'Confirmar')
+            AppButton(onTap: () => _onTextConfirm(context, text), color: Colors.blueAccent, label: 'Confirmar')
           ],
         ),
       ),
@@ -28,6 +27,6 @@ class WritePage extends StatelessWidget {
   }
 
   _onTextConfirm(BuildContext context, String? result) {
-    Navigator.pop(context, result);
+    return Navigator.pop(context, result);
   }
 }
