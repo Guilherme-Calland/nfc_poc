@@ -86,8 +86,8 @@ class _HomePageState extends State<HomePage> {
   }
 
   _readNFC() async{
+    _message = "";
     setState(() {
-      _message = "";
       _readingTag = true;
     });
 
@@ -108,9 +108,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _writeToNFC() async{
+    _message = "";
     setState(() {
       _writingTag = true;
-      _message = "";
     });
     final bool deviceCanReadWrite = await repository.deviceCanReadWrite();
     if(deviceCanReadWrite){

@@ -16,11 +16,11 @@ class AppButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(10.0),
           color: color,
         ),
-        height: 58,
+        height: 64,
         child: Center(
           child: Text(
             label,
-            style: TextStyle(color: Colors.white),
+            style: TextStyle(color: Colors.white, fontSize: 18),
 
           ),
         ),
